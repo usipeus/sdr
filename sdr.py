@@ -2,7 +2,7 @@ import random
 import re
 import string
 
-def roll(n, s):
+def roll_dice(n, s):
     ''' Returns a list with the results of rolling n dice,
     each dice with s sides; the sum is the last list element '''
     assert abs(n) > 0, "not allowed to roll 0 dice!"
@@ -14,12 +14,13 @@ def roll(n, s):
         current = random.randrange(s) + 1
         results.append(current)
         total += current
-    
+
     if n < 0:
         total = -total
 
     results.append(total)
-    return results
+    # return results
+    return total
 
 def parse_roll(roll):
     ''' Returns a list of all the elements in the roll '''
@@ -36,17 +37,34 @@ def parse_roll(roll):
             break
 
     # separate into parts (divided by + or -)
-    roll = roll.replace('-', '+ -')
+    roll = roll.replace('-', '+-')
     parts = roll.split('+')
+
+    # create a list for each dice roll and convert everything to ints
+    for i in range(len(parts)):
+        if 'd' in parts[i]:
+            # find the integers to the left and right of the 'd'
+            d_loc = parts[i].find('d')
+            parts[i] = [int(parts[i][:d_loc]), int(parts[i][d_loc + 1:])]
+        else:
+            # convert the modifiers to integers
+            parts[i] = int(parts[i])
 
     return parts
 
 def print_roll(roll):
     parts = parse_roll(roll)
+    result = 0
+
+    # calculate result
+    for i in range(len(parts)):
+        if type(parts[i]) is int:
+            result += parts[i]
+        else:
+            result += roll_dice(parts[i][0], parts[i][1])
 
     print("You entered:", roll)
-    # print("Interpreted as:", )
-    # print("Result:", 
+    print("Interpreted as:", parts)
+    print("Result:", result)
 
-print(parse_roll("4 - 1d20 + 4d6 - 5 + 2"))
-print(roll(-2, 6))
+print_roll("1d4 - 5 + 2")
