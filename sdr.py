@@ -1,3 +1,4 @@
+import os
 import random
 import re
 import string
@@ -54,17 +55,41 @@ def parse_roll(roll):
 
 def print_roll(roll):
     parts = parse_roll(roll)
-    result = 0
+    result = ""
+    total = 0
 
     # calculate result
     for i in range(len(parts)):
         if type(parts[i]) is int:
-            result += parts[i]
+            result += str(parts[i])
+            total += parts[i]
         else:
-            result += roll_dice(parts[i][0], parts[i][1])
+            current_roll = roll_dice(parts[i][0], parts[i][1])
+            result += "{" + str(parts[i][0]) + "d" + str(parts[i][1])
+            result += ": " + str(current_roll) + "}"
+            total += current_roll
+
+        if i != len(parts) - 1:
+            result += ' + '
 
     print("You entered:", roll)
     print("Interpreted as:", parts)
     print("Result:", result)
+    print("Total:", total)
+    print()
 
-print_roll("1d4 - 5 + 2")
+print("Simple Dice Roller v0.1")
+print("author: usipeus")
+print("type r to reroll, q to quit")
+
+while True:
+    roll = input("Enter roll: ").strip()
+    if roll == 'q':
+        print("\nExiting...")
+        break
+    elif roll == 'r':
+        print_roll(prev)
+    else:
+        print()
+        print_roll(roll)
+        prev = roll
