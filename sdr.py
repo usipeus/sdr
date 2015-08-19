@@ -7,10 +7,11 @@ def roll_dice(n, s):
     ''' Returns a list with the results of rolling n dice,
     each dice with s sides; the sum is the last list element '''
     assert abs(n) > 0, "not allowed to roll 0 dice!"
-    assert abs(s) > 1, "can't roll 1 sided dice!"
+    assert abs(s) > 1, "can't roll 0 or 1 sided dice!"
 
     results = []
     total = 0
+
     for i in range(abs(n)):
         current = random.randrange(s) + 1
         results.append(current)
@@ -26,17 +27,6 @@ def roll_dice(n, s):
 def parse_roll(roll):
     ''' Returns a list of all the elements in the roll '''
 
-    # destroy all whitespace
-    for char in string.whitespace:
-        roll = roll.replace(char, "")
-
-    # check for invalid characters
-    allowed_chars = string.digits + 'd' + '+' + '-'
-    for char in roll:
-        if not (char in allowed_chars):
-            print("Invalid roll! Roll can only contain:", allowed_chars)
-            break
-
     # separate into parts (divided by + or -)
     roll = roll.replace('-', '+-')
     parts = roll.split('+')
@@ -51,14 +41,10 @@ def parse_roll(roll):
             # convert the modifiers to integers
             parts[i] = int(parts[i])
 
-    return parts
-
-def print_roll(roll):
-    parts = parse_roll(roll)
+    # calculate result
     result = ""
     total = 0
 
-    # calculate result
     for i in range(len(parts)):
         if type(parts[i]) is int:
             result += str(parts[i])
@@ -76,20 +62,43 @@ def print_roll(roll):
     print("Interpreted as:", parts)
     print("Result:", result)
     print("Total:", total)
-    print()
+
+def print_roll(roll):
+
+    # destroy all whitespace
+    for char in string.whitespace:
+        roll = roll.replace(char, "")
+
+    # check for invalid characters
+    valid = True
+    allowed_chars = string.digits + 'd' + '+' + '-' + 'r'
+
+    for char in roll:
+        if not (char in allowed_chars):
+            print("Invalid roll! Roll can only contain:", allowed_chars)
+            valid = False
+            break
+
+    if valid:
+        parse_roll(roll)
+
+def roll_loop():
+    while True:
+        roll = input("\nEnter roll: ").strip()
+
+        if roll == 'quit':
+            print("Exiting...")
+            break
+        else:
+            print()
+            if 'r' in roll:
+                roll = roll.replace('r', prev)
+
+            print_roll(roll)
+            prev = roll
 
 print("Simple Dice Roller v0.1")
 print("author: usipeus")
-print("type r to reroll, q to quit")
+print("type 'quit' to quit")
 
-while True:
-    roll = input("Enter roll: ").strip()
-    if roll == 'q':
-        print("\nExiting...")
-        break
-    elif roll == 'r':
-        print_roll(prev)
-    else:
-        print()
-        print_roll(roll)
-        prev = roll
+roll_loop()
