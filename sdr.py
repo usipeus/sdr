@@ -89,6 +89,8 @@ def roll_loop():
         if roll == 'quit':
             print("Exiting...")
             break
+        elif roll == '':
+            print ("No roll entered.")
         else:
             print()
             if 'r' in roll:
